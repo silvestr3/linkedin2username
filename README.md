@@ -1,10 +1,8 @@
 # TODO
 
-[ ] Implement scrape to return also the employee's profile links
-
-[ ] Implement individual profiles scraping, to return additional info like job title, location, time worked at current company, so on
-
-[ ] Implement nice CSV/Spreadsheet output with all the info on each user
+- [ ] Implement scrape to return also the employee's profile links
+- [ ] Implement individual profiles scraping, to return additional info like job title, location, time worked at current company, so on
+- [ ] Implement nice CSV/Spreadsheet output with all the info on each user
 
 # linkedin2username
 OSINT Tool: Generate username lists from companies on LinkedIn.
