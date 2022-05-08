@@ -533,9 +533,6 @@ def scrape_info(session, company_id, staff_count, args):
             
             result_data = json.loads(result)
 
-            outfile = open('test.json', 'w')
-            outfile.write(str(json.dumps(result_data, sort_keys=False, indent=4)))
-
             for el in result_data['elements']:
                 try:
                     profile = el["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]["miniProfile"]
@@ -778,8 +775,9 @@ def main():
     clean_list = clean(names)
 
     # Write the data to some files.
-    write_files(args.company, args.domain, clean_list)
-    output_csv(found_profiles, args.company)
+    if found_profiles == False:
+        write_files(args.company, args.domain, clean_list)
+        output_csv(found_profiles, args.company)
 
     # Time to get hacking.
     print("\n\n" + PC.ok_box + "All done! Check out your lovely new files in "
