@@ -17,6 +17,8 @@ import getpass
 from distutils.version import StrictVersion
 import urllib.parse
 import requests
+import json
+import pandas
 
 
                 ########## BEGIN GLOBAL DECLARATIONS ##########
@@ -520,6 +522,7 @@ def scrape_info(session, company_id, staff_count, args):
             current_keyword = ''
 
         ## This is the inner loop. It will search results 25 at a time.
+        full_profiles = []
         for page in range(0, args.depth):
             new_names = 0
             sys.stdout.flush()
@@ -527,6 +530,32 @@ def scrape_info(session, company_id, staff_count, args):
                              + str(page+1) + "...    ")
             result = get_results(session, company_id, page, current_region,
                                  current_keyword)
+            
+            result_data = json.loads(result)
+
+            outfile = open('test.json', 'w')
+            outfile.write(str(json.dumps(result_data, sort_keys=False, indent=4)))
+
+            for el in result_data['elements']:
+                try:
+                    profile = el["hitInfo"]["com.linkedin.voyager.search.SearchProfile"]["miniProfile"]
+                except:
+                    continue
+
+                fname = profile["firstName"]
+                lname = profile["lastName"]
+                occup = profile["occupation"]
+
+                if "" not in (fname, lname, occup):
+                    full_profiles.append(
+                        {
+                            "First Name": fname,
+                            "Last Name": lname,
+                            "Occupation": occup
+                        }
+                    )
+
+
             first_name = re.findall(r'"firstName":"(.*?)"', result)
             last_name = re.findall(r'"lastName":"(.*?)"', result)
 
@@ -568,7 +597,7 @@ def scrape_info(session, company_id, staff_count, args):
             # nap here.
             time.sleep(args.sleep)
 
-    return full_name_list
+    return full_profiles
 
 
 def remove_accents(raw_text):
@@ -695,6 +724,26 @@ def write_files(company, domain, name_list):
         files[file_name].close()
 
 
+def output_csv(profiles, company):
+    fname = []
+    lname = []
+    occup = []
+
+    for person in profiles:
+        fname.append(person['First Name'])
+        lname.append(person['Last Name'])
+        occup.append(person['Occupation'])
+
+    df = pandas.DataFrame(data={
+        "First Name": fname,
+        "Last Name": lname,
+        "Occupation": occup
+    })
+
+    filename = f"{company}-data.csv"
+    df.to_csv(filename, sep=',', index=False)
+
+
 def main():
     """Main Function"""
     print(BANNER + "\n\n\n")
@@ -714,13 +763,23 @@ def main():
     # Prepare and execute the searches.
     session = set_search_csrf(session)
     company_id, staff_count = get_company_info(args.company, session)
-    found_names = scrape_info(session, company_id, staff_count, args)
-
+    found_profiles = scrape_info(session, company_id, staff_count, args)
+    
     # Clean up all the data.
-    clean_list = clean(found_names)
+
+    names = []
+    for p in found_profiles:
+        fname = p['First Name']
+        lname = p['Last Name']
+
+        full_name = (f"{fname} {lname}")
+        names.append(full_name)
+    
+    clean_list = clean(names)
 
     # Write the data to some files.
     write_files(args.company, args.domain, clean_list)
+    output_csv(found_profiles, args.company)
 
     # Time to get hacking.
     print("\n\n" + PC.ok_box + "All done! Check out your lovely new files in "

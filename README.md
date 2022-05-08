@@ -1,8 +1,8 @@
 # TODO
 
-- [ ] Implement scrape to return also the employee's profile links
-- [ ] Implement individual profiles scraping, to return additional info like job title, location, time worked at current company, so on
-- [ ] Implement nice CSV/Spreadsheet output with all the info on each user
+Added features to original linkedin2username (https://github.com/initstring/linkedin2username)
+* Refactored the scrape function, so it also grabs the person's occupation
+* Implemented CSV output with: FIRST NAME, LAST NAME, OCCUPATION
 
 # linkedin2username
 OSINT Tool: Generate username lists from companies on LinkedIn.
