@@ -1,4 +1,4 @@
-# TODO
+# New
 
 Added features to original linkedin2username (https://github.com/initstring/linkedin2username)
 * Refactored the scrape function, so it also grabs the person's occupation
