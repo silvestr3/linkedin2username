@@ -775,9 +775,8 @@ def main():
     clean_list = clean(names)
 
     # Write the data to some files.
-    if found_profiles == False:
-        write_files(args.company, args.domain, clean_list)
-        output_csv(found_profiles, args.company)
+    write_files(args.company, args.domain, clean_list)
+    output_csv(found_profiles, args.company)
 
     # Time to get hacking.
     print("\n\n" + PC.ok_box + "All done! Check out your lovely new files in "
